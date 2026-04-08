@@ -4,15 +4,18 @@ import br.com.pokeidle.catalogo.domain.PokemonEspecie;
 import br.com.pokeidle.catalogo.domain.PokemonEspecieRepository;
 import br.com.pokeidle.catalogo.domain.PokemonPerfilDesign;
 import br.com.pokeidle.catalogo.domain.PokemonPerfilDesignRepository;
+import br.com.pokeidle.importacao.domain.PokemonImportadoDomainEvent;
 import br.com.pokeidle.importacao.infrastructure.PokeApiClient;
 import br.com.pokeidle.importacao.infrastructure.PokeApiPokemonResponse;
 import br.com.pokeidle.importacao.infrastructure.PokeApiSpeciesResponse;
+import br.com.pokeidle.shared.application.DomainEventPublisher;
 import br.com.pokeidle.shared.domain.BusinessException;
 import br.com.pokeidle.shared.domain.TipoPokemon;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Comparator;
+import java.util.List;
 
 @Service
 public class ImportarPokemonPorIdOuNomeHandler {
@@ -20,13 +23,16 @@ public class ImportarPokemonPorIdOuNomeHandler {
     private final PokeApiClient pokeApiClient;
     private final PokemonEspecieRepository pokemonEspecieRepository;
     private final PokemonPerfilDesignRepository pokemonPerfilDesignRepository;
+    private final DomainEventPublisher domainEventPublisher;
 
     public ImportarPokemonPorIdOuNomeHandler(PokeApiClient pokeApiClient,
                                              PokemonEspecieRepository pokemonEspecieRepository,
-                                             PokemonPerfilDesignRepository pokemonPerfilDesignRepository) {
+                                             PokemonPerfilDesignRepository pokemonPerfilDesignRepository,
+                                             DomainEventPublisher domainEventPublisher) {
         this.pokeApiClient = pokeApiClient;
         this.pokemonEspecieRepository = pokemonEspecieRepository;
         this.pokemonPerfilDesignRepository = pokemonPerfilDesignRepository;
+        this.domainEventPublisher = domainEventPublisher;
     }
 
     @Transactional
@@ -82,6 +88,7 @@ public class ImportarPokemonPorIdOuNomeHandler {
                 .orElseGet(() -> new PokemonPerfilDesign(entidade.getId(), entidade.getNome(), corPorTipo(entidade.getTipoPrimario())));
         design.atualizar(entidade.getNome(), corPorTipo(entidade.getTipoPrimario()));
         pokemonPerfilDesignRepository.save(design);
+        domainEventPublisher.publishAll(List.of(new PokemonImportadoDomainEvent(entidade.getId(), entidade.getNome())));
 
         return new PokemonImportadoDto(
                 entidade.getId(),
@@ -116,7 +123,11 @@ public class ImportarPokemonPorIdOuNomeHandler {
             case "flying" -> TipoPokemon.FLYING;
             case "poison" -> TipoPokemon.POISON;
             case "normal" -> TipoPokemon.NORMAL;
-            default -> throw new BusinessException("Tipo nao suportado no v0: " + tipo);
+            case "electric" -> TipoPokemon.ELECTRIC;
+            case "bug" -> TipoPokemon.BUG;
+            case "rock" -> TipoPokemon.ROCK;
+            case "ground" -> TipoPokemon.GROUND;
+            default -> throw new BusinessException("Tipo nao suportado: " + tipo);
         };
     }
 
@@ -127,6 +138,10 @@ public class ImportarPokemonPorIdOuNomeHandler {
             case WATER -> "#6890F0";
             case FLYING -> "#A890F0";
             case POISON -> "#A040A0";
+            case ELECTRIC -> "#F8D030";
+            case BUG -> "#A8B820";
+            case ROCK -> "#B8A038";
+            case GROUND -> "#E0C068";
             default -> "#A8A878";
         };
     }

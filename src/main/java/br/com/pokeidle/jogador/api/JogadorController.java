@@ -5,7 +5,8 @@ import br.com.pokeidle.jogador.application.command.CriarJogadorHandler;
 import br.com.pokeidle.jogador.application.command.EscolherPokemonInicialCommand;
 import br.com.pokeidle.jogador.application.command.EscolherPokemonInicialHandler;
 import br.com.pokeidle.jogador.application.query.JogadorDto;
-import br.com.pokeidle.jogador.application.query.ObterJogadorHandler;
+import br.com.pokeidle.jogador.application.query.ObterPerfilJogadorHandler;
+import br.com.pokeidle.jogador.application.query.ObterPerfilJogadorQuery;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.validation.annotation.Validated;
@@ -23,14 +24,14 @@ public class JogadorController {
 
     private final CriarJogadorHandler criarJogadorHandler;
     private final EscolherPokemonInicialHandler escolherPokemonInicialHandler;
-    private final ObterJogadorHandler obterJogadorHandler;
+    private final ObterPerfilJogadorHandler obterPerfilJogadorHandler;
 
     public JogadorController(CriarJogadorHandler criarJogadorHandler,
                              EscolherPokemonInicialHandler escolherPokemonInicialHandler,
-                             ObterJogadorHandler obterJogadorHandler) {
+                             ObterPerfilJogadorHandler obterPerfilJogadorHandler) {
         this.criarJogadorHandler = criarJogadorHandler;
         this.escolherPokemonInicialHandler = escolherPokemonInicialHandler;
-        this.obterJogadorHandler = obterJogadorHandler;
+        this.obterPerfilJogadorHandler = obterPerfilJogadorHandler;
     }
 
     @PostMapping
@@ -45,7 +46,7 @@ public class JogadorController {
 
     @GetMapping("/{id}")
     public JogadorDto obter(@PathVariable String id) {
-        return obterJogadorHandler.handle(id);
+        return obterPerfilJogadorHandler.handle(new ObterPerfilJogadorQuery(id));
     }
 
     public record CriarJogadorRequest(@NotBlank String nomePerfil) {

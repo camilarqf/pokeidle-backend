@@ -12,7 +12,10 @@ public final class BatalhaMapper {
                 batalha.getId(),
                 batalha.getJogadorId(),
                 batalha.getNoJornadaId(),
+                batalha.getTipo().name(),
                 batalha.getPokemonJogadorId(),
+                batalha.getNomeOponente(),
+                batalha.getTreinadorNpcId(),
                 batalha.getEspecieSelvagemId(),
                 batalha.getNomeSelvagem(),
                 batalha.getNivelSelvagem(),
@@ -20,7 +23,9 @@ public final class BatalhaMapper {
                 batalha.getHpMaximoSelvagem(),
                 batalha.getStatus().name(),
                 batalha.getTurnos(),
-                batalha.getExperienciaConcedida()
+                batalha.getExperienciaConcedida(),
+                batalha.getRecompensaMoedas(),
+                batalha.isCapturaPermitida()
         );
     }
 }

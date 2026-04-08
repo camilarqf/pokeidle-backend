@@ -6,5 +6,9 @@ public enum TipoPokemon {
     WATER,
     GRASS,
     FLYING,
-    POISON
+    POISON,
+    ELECTRIC,
+    BUG,
+    ROCK,
+    GROUND
 }

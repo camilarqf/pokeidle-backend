@@ -12,4 +12,6 @@ public interface PokemonEspecieRepository {
     Optional<PokemonEspecie> findByNomeIgnoreCase(String nome);
 
     List<PokemonEspecie> findAllByIdIn(List<Long> ids);
+
+    List<PokemonEspecie> findAll();
 }

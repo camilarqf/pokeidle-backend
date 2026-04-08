@@ -4,6 +4,7 @@ import br.com.pokeidle.jogador.domain.Jogador;
 import br.com.pokeidle.jogador.domain.JogadorRepository;
 import br.com.pokeidle.mundo.domain.NoJornada;
 import br.com.pokeidle.mundo.domain.NoJornadaRepository;
+import br.com.pokeidle.progresso.application.command.AtualizarProgressoDoNoHandler;
 import br.com.pokeidle.progresso.domain.ProgressoNoJogadorRepository;
 import br.com.pokeidle.shared.domain.BusinessException;
 import br.com.pokeidle.shared.domain.NotFoundException;
@@ -16,13 +17,16 @@ public class EntrarNoHandler {
     private final JogadorRepository jogadorRepository;
     private final NoJornadaRepository noJornadaRepository;
     private final ProgressoNoJogadorRepository progressoRepository;
+    private final AtualizarProgressoDoNoHandler atualizarProgressoDoNoHandler;
 
     public EntrarNoHandler(JogadorRepository jogadorRepository,
                            NoJornadaRepository noJornadaRepository,
-                           ProgressoNoJogadorRepository progressoRepository) {
+                           ProgressoNoJogadorRepository progressoRepository,
+                           AtualizarProgressoDoNoHandler atualizarProgressoDoNoHandler) {
         this.jogadorRepository = jogadorRepository;
         this.noJornadaRepository = noJornadaRepository;
         this.progressoRepository = progressoRepository;
+        this.atualizarProgressoDoNoHandler = atualizarProgressoDoNoHandler;
     }
 
     @Transactional
@@ -39,5 +43,6 @@ public class EntrarNoHandler {
         }
         jogador.entrarNo(no.getId());
         jogadorRepository.save(jogador);
+        atualizarProgressoDoNoHandler.registrarEntradaNo(jogador.getId(), no.getId());
     }
 }

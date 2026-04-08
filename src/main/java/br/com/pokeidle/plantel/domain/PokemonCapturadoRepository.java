@@ -12,4 +12,6 @@ public interface PokemonCapturadoRepository {
     Optional<PokemonCapturado> findById(String id);
 
     Optional<PokemonCapturado> findFirstByJogadorIdAndAtivoTrue(String jogadorId);
+
+    List<PokemonCapturado> findByIdIn(List<String> ids);
 }

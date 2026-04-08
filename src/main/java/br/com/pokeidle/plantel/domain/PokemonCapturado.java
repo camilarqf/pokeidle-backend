@@ -164,6 +164,38 @@ public class PokemonCapturado extends AggregateRoot {
         this.ativo = ativo;
     }
 
+    public void prepararParaBatalhaComLevelCap(int levelCap) {
+        hpAtual = Math.min(hpAtual, getHpMaximoEfetivo(levelCap));
+    }
+
+    public int getNivelEfetivo(int levelCap) {
+        return Math.min(nivel, levelCap);
+    }
+
+    public int getHpAtualEfetivo(int levelCap) {
+        return Math.min(hpAtual, getHpMaximoEfetivo(levelCap));
+    }
+
+    public int getHpMaximoEfetivo(int levelCap) {
+        return hpMaximo - (Math.max(0, nivel - getNivelEfetivo(levelCap)) * 4);
+    }
+
+    public int getAtaqueEfetivo(int levelCap) {
+        return ataque - (Math.max(0, nivel - getNivelEfetivo(levelCap)) * 2);
+    }
+
+    public int getDefesaEfetiva(int levelCap) {
+        return defesa - (Math.max(0, nivel - getNivelEfetivo(levelCap)) * 2);
+    }
+
+    public int getVelocidadeEfetiva(int levelCap) {
+        return velocidade - (Math.max(0, nivel - getNivelEfetivo(levelCap)) * 2);
+    }
+
+    public int getExperienciaParaProximoNivel() {
+        return experienciaParaProximoNivel();
+    }
+
     private void subirNivel() {
         nivel += 1;
         hpMaximo += 4;

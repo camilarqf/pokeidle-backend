@@ -4,5 +4,7 @@ public record JogadorDto(String id,
                          String nomePerfil,
                          int saldoMoedas,
                          Long noAtualId,
-                         boolean pokemonInicialEscolhido) {
+                         boolean pokemonInicialEscolhido,
+                         int nivelCapAtual,
+                         java.util.List<String> badges) {
 }

@@ -14,4 +14,7 @@ public interface JpaPokemonCapturadoRepository extends JpaRepository<PokemonCapt
 
     @Override
     Optional<PokemonCapturado> findFirstByJogadorIdAndAtivoTrue(String jogadorId);
+
+    @Override
+    List<PokemonCapturado> findByIdIn(List<String> ids);
 }

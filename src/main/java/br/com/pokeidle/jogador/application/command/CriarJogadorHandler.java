@@ -38,6 +38,6 @@ public class CriarJogadorHandler {
         Jogador jogador = Jogador.criar(Ids.unique(), command.nomePerfil(), noInicialId);
         jogadorRepository.save(jogador);
         domainEventPublisher.publishAll(jogador.pullDomainEvents());
-        return new JogadorDto(jogador.getId(), jogador.getNomePerfil(), jogador.getSaldoMoedas(), jogador.getNoAtualId(), jogador.isPokemonInicialEscolhido());
+        return new JogadorDto(jogador.getId(), jogador.getNomePerfil(), jogador.getSaldoMoedas(), jogador.getNoAtualId(), jogador.isPokemonInicialEscolhido(), jogador.getNivelCapAtual(), java.util.List.of());
     }
 }

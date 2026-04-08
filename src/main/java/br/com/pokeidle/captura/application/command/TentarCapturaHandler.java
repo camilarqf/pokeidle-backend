@@ -2,6 +2,7 @@ package br.com.pokeidle.captura.application.command;
 
 import br.com.pokeidle.batalha.domain.Batalha;
 import br.com.pokeidle.batalha.domain.BatalhaRepository;
+import br.com.pokeidle.batalha.domain.TipoBatalha;
 import br.com.pokeidle.catalogo.domain.PokemonEspecie;
 import br.com.pokeidle.catalogo.domain.PokemonEspecieRepository;
 import br.com.pokeidle.captura.domain.CalculadoraCaptura;
@@ -10,6 +11,7 @@ import br.com.pokeidle.inventario.domain.InventarioJogador;
 import br.com.pokeidle.inventario.domain.InventarioJogadorRepository;
 import br.com.pokeidle.inventario.domain.Item;
 import br.com.pokeidle.inventario.domain.ItemRepository;
+import br.com.pokeidle.plantel.application.PlantelService;
 import br.com.pokeidle.plantel.domain.PokemonCapturado;
 import br.com.pokeidle.plantel.domain.PokemonCapturadoRepository;
 import br.com.pokeidle.shared.application.DomainEventPublisher;
@@ -28,6 +30,7 @@ public class TentarCapturaHandler {
     private final PokemonCapturadoRepository pokemonCapturadoRepository;
     private final ItemRepository itemRepository;
     private final InventarioJogadorRepository inventarioJogadorRepository;
+    private final PlantelService plantelService;
     private final RandomProvider randomProvider;
     private final DomainEventPublisher domainEventPublisher;
 
@@ -36,6 +39,7 @@ public class TentarCapturaHandler {
                                 PokemonCapturadoRepository pokemonCapturadoRepository,
                                 ItemRepository itemRepository,
                                 InventarioJogadorRepository inventarioJogadorRepository,
+                                PlantelService plantelService,
                                 RandomProvider randomProvider,
                                 DomainEventPublisher domainEventPublisher) {
         this.batalhaRepository = batalhaRepository;
@@ -43,6 +47,7 @@ public class TentarCapturaHandler {
         this.pokemonCapturadoRepository = pokemonCapturadoRepository;
         this.itemRepository = itemRepository;
         this.inventarioJogadorRepository = inventarioJogadorRepository;
+        this.plantelService = plantelService;
         this.randomProvider = randomProvider;
         this.domainEventPublisher = domainEventPublisher;
     }
@@ -53,6 +58,9 @@ public class TentarCapturaHandler {
                 .orElseThrow(() -> new NotFoundException("Batalha nao encontrada."));
         if (!batalha.estaEmAndamento()) {
             throw new BusinessException("A captura so pode ser tentada durante uma batalha ativa.");
+        }
+        if (batalha.getTipo() != TipoBatalha.SELVAGEM) {
+            throw new BusinessException("Captura so pode ser tentada em batalha selvagem.");
         }
         Item pokeBall = itemRepository.findByCodigo(CodigoItem.POKE_BALL)
                 .orElseThrow(() -> new NotFoundException("Pokeball nao cadastrada."));
@@ -71,6 +79,7 @@ public class TentarCapturaHandler {
 
         PokemonCapturado pokemonCapturado = PokemonCapturado.criarSelvagemCapturado(Ids.unique(), batalha.getJogadorId(), especie, batalha.getNivelSelvagem());
         pokemonCapturadoRepository.save(pokemonCapturado);
+        plantelService.alocarPokemonCapturado(batalha.getJogadorId(), pokemonCapturado.getId());
         batalha.registrarCaptura(pokemonCapturado.getId());
         batalhaRepository.save(batalha);
         domainEventPublisher.publishAll(batalha.pullDomainEvents());

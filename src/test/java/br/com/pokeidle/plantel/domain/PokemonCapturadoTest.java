@@ -4,6 +4,7 @@ import br.com.pokeidle.catalogo.domain.PokemonEspecie;
 import br.com.pokeidle.shared.domain.TipoPokemon;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PokemonCapturadoTest {
@@ -20,5 +21,17 @@ class PokemonCapturadoTest {
         assertTrue(pokemon.getNivel() > 5);
         assertTrue(pokemon.getAtaque() > ataqueInicial);
         assertTrue(pokemon.getHpMaximo() > hpMaximoInicial);
+    }
+
+    @Test
+    void deveAplicarSoftCapNosStatsEfetivosDaBatalha() {
+        PokemonEspecie bulbasaur = new PokemonEspecie(1L, "bulbasaur", TipoPokemon.GRASS, TipoPokemon.POISON, 45, 49, 49, 45, 7, 69, null, 45, "generation-i");
+        PokemonCapturado pokemon = PokemonCapturado.criarInicial("pk-1", "j-1", bulbasaur);
+
+        pokemon.ganharExperiencia(2000);
+
+        assertTrue(pokemon.getNivel() > 12);
+        assertEquals(12, pokemon.getNivelEfetivo(12));
+        assertTrue(pokemon.getAtaqueEfetivo(12) < pokemon.getAtaque());
     }
 }

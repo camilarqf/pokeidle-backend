@@ -5,6 +5,7 @@ import br.com.pokeidle.catalogo.domain.PokemonEspecieRepository;
 import br.com.pokeidle.jogador.application.query.JogadorDto;
 import br.com.pokeidle.jogador.domain.Jogador;
 import br.com.pokeidle.jogador.domain.JogadorRepository;
+import br.com.pokeidle.plantel.application.PlantelService;
 import br.com.pokeidle.plantel.domain.PokemonCapturado;
 import br.com.pokeidle.plantel.domain.PokemonCapturadoRepository;
 import br.com.pokeidle.shared.application.DomainEventPublisher;
@@ -24,15 +25,18 @@ public class EscolherPokemonInicialHandler {
     private final JogadorRepository jogadorRepository;
     private final PokemonEspecieRepository pokemonEspecieRepository;
     private final PokemonCapturadoRepository pokemonCapturadoRepository;
+    private final PlantelService plantelService;
     private final DomainEventPublisher domainEventPublisher;
 
     public EscolherPokemonInicialHandler(JogadorRepository jogadorRepository,
                                          PokemonEspecieRepository pokemonEspecieRepository,
                                          PokemonCapturadoRepository pokemonCapturadoRepository,
+                                         PlantelService plantelService,
                                          DomainEventPublisher domainEventPublisher) {
         this.jogadorRepository = jogadorRepository;
         this.pokemonEspecieRepository = pokemonEspecieRepository;
         this.pokemonCapturadoRepository = pokemonCapturadoRepository;
+        this.plantelService = plantelService;
         this.domainEventPublisher = domainEventPublisher;
     }
 
@@ -48,9 +52,10 @@ public class EscolherPokemonInicialHandler {
 
         PokemonCapturado pokemonInicial = PokemonCapturado.criarInicial(Ids.unique(), jogador.getId(), especie);
         pokemonCapturadoRepository.save(pokemonInicial);
+        plantelService.alocarPokemonCapturado(jogador.getId(), pokemonInicial.getId());
         jogador.escolherPokemonInicial(pokemonInicial.getId());
         jogadorRepository.save(jogador);
         domainEventPublisher.publishAll(jogador.pullDomainEvents());
-        return new JogadorDto(jogador.getId(), jogador.getNomePerfil(), jogador.getSaldoMoedas(), jogador.getNoAtualId(), jogador.isPokemonInicialEscolhido());
+        return new JogadorDto(jogador.getId(), jogador.getNomePerfil(), jogador.getSaldoMoedas(), jogador.getNoAtualId(), jogador.isPokemonInicialEscolhido(), jogador.getNivelCapAtual(), java.util.List.of());
     }
 }

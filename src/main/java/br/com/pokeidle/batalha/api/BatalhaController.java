@@ -1,6 +1,9 @@
 package br.com.pokeidle.batalha.api;
 
 import br.com.pokeidle.batalha.application.command.IniciarBatalhaSelvagemCommand;
+import br.com.pokeidle.batalha.application.command.IniciarBatalhaLiderCommand;
+import br.com.pokeidle.batalha.application.command.IniciarBatalhaTreinadorCommand;
+import br.com.pokeidle.batalha.application.command.IniciarBatalhaTreinadorHandler;
 import br.com.pokeidle.batalha.application.command.IniciarBatalhaSelvagemHandler;
 import br.com.pokeidle.batalha.application.command.ResolverTurnoBatalhaCommand;
 import br.com.pokeidle.batalha.application.command.ResolverTurnoBatalhaHandler;
@@ -16,13 +19,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class BatalhaController {
 
     private final IniciarBatalhaSelvagemHandler iniciarBatalhaSelvagemHandler;
+    private final IniciarBatalhaTreinadorHandler iniciarBatalhaTreinadorHandler;
     private final ResolverTurnoBatalhaHandler resolverTurnoBatalhaHandler;
     private final ObterBatalhaAtualHandler obterBatalhaAtualHandler;
 
     public BatalhaController(IniciarBatalhaSelvagemHandler iniciarBatalhaSelvagemHandler,
+                             IniciarBatalhaTreinadorHandler iniciarBatalhaTreinadorHandler,
                              ResolverTurnoBatalhaHandler resolverTurnoBatalhaHandler,
                              ObterBatalhaAtualHandler obterBatalhaAtualHandler) {
         this.iniciarBatalhaSelvagemHandler = iniciarBatalhaSelvagemHandler;
+        this.iniciarBatalhaTreinadorHandler = iniciarBatalhaTreinadorHandler;
         this.resolverTurnoBatalhaHandler = resolverTurnoBatalhaHandler;
         this.obterBatalhaAtualHandler = obterBatalhaAtualHandler;
     }
@@ -30,6 +36,16 @@ public class BatalhaController {
     @PostMapping("/jogadores/{id}/batalhas/selvagem/iniciar")
     public BatalhaDto iniciar(@PathVariable String id) {
         return iniciarBatalhaSelvagemHandler.handle(new IniciarBatalhaSelvagemCommand(id));
+    }
+
+    @PostMapping("/jogadores/{id}/batalhas/treinador/{treinadorId}/iniciar")
+    public BatalhaDto iniciarTreinador(@PathVariable String id, @PathVariable Long treinadorId) {
+        return iniciarBatalhaTreinadorHandler.handle(new IniciarBatalhaTreinadorCommand(id, treinadorId));
+    }
+
+    @PostMapping("/jogadores/{id}/batalhas/lider/{liderId}/iniciar")
+    public BatalhaDto iniciarLider(@PathVariable String id, @PathVariable Long liderId) {
+        return iniciarBatalhaTreinadorHandler.handle(new IniciarBatalhaLiderCommand(id, liderId));
     }
 
     @PostMapping("/batalhas/{id}/turno")

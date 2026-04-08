@@ -2,6 +2,8 @@ package br.com.pokeidle.mundo.application.query;
 
 import br.com.pokeidle.mundo.domain.TipoNo;
 
+import java.util.List;
+
 public record DetalhesNoDto(Long id,
                             String nome,
                             String descricao,
@@ -10,6 +12,9 @@ public record DetalhesNoDto(Long id,
                             boolean cidadeHub,
                             MissaoDto missao) {
 
-    public record MissaoDto(String tipo, int alvoQuantidade, String descricao) {
+    public record MissaoDto(String tipo, int alvoQuantidade, String descricao, List<ObjetivoDto> objetivos) {
+    }
+
+    public record ObjetivoDto(String tipo, int alvoQuantidade, String descricao, int ordem) {
     }
 }

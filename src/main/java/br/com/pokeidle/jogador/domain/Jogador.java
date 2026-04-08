@@ -32,20 +32,30 @@ public class Jogador extends AggregateRoot {
     @Column(name = "pokemon_inicial_escolhido", nullable = false)
     private boolean pokemonInicialEscolhido;
 
+    @Column(name = "nivel_cap_atual", nullable = false)
+    private int nivelCapAtual;
+
     @Column(name = "criado_em", nullable = false)
     private LocalDateTime criadoEm;
 
-    private Jogador(String id, String nomePerfil, int saldoMoedas, Long noAtualId, boolean pokemonInicialEscolhido, LocalDateTime criadoEm) {
+    private Jogador(String id,
+                    String nomePerfil,
+                    int saldoMoedas,
+                    Long noAtualId,
+                    boolean pokemonInicialEscolhido,
+                    int nivelCapAtual,
+                    LocalDateTime criadoEm) {
         this.id = id;
         this.nomePerfil = nomePerfil;
         this.saldoMoedas = saldoMoedas;
         this.noAtualId = noAtualId;
         this.pokemonInicialEscolhido = pokemonInicialEscolhido;
+        this.nivelCapAtual = nivelCapAtual;
         this.criadoEm = criadoEm;
     }
 
     public static Jogador criar(String id, String nomePerfil, Long noInicialId) {
-        Jogador jogador = new Jogador(id, nomePerfil, 500, noInicialId, false, LocalDateTime.now());
+        Jogador jogador = new Jogador(id, nomePerfil, 500, noInicialId, false, 12, LocalDateTime.now());
         jogador.registerEvent(new JogadorCriadoDomainEvent(id));
         return jogador;
     }
@@ -62,10 +72,22 @@ public class Jogador extends AggregateRoot {
         this.noAtualId = noId;
     }
 
+    public void creditarMoedas(int valor) {
+        this.saldoMoedas += valor;
+    }
+
     public void debitarMoedas(int valor) {
         if (valor > saldoMoedas) {
             throw new IllegalStateException("Saldo insuficiente.");
         }
         this.saldoMoedas -= valor;
+    }
+
+    public void aumentarLevelCap(int novoCap) {
+        if (novoCap <= nivelCapAtual) {
+            return;
+        }
+        this.nivelCapAtual = novoCap;
+        registerEvent(new LevelCapAumentadoDomainEvent(id, novoCap));
     }
 }

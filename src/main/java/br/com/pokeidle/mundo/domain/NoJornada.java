@@ -72,4 +72,8 @@ public class NoJornada {
     public boolean ehCidade() {
         return tipo == TipoNo.CIDADE;
     }
+
+    public boolean ehGinasio() {
+        return tipo == TipoNo.GINASIO;
+    }
 }
